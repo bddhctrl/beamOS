@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>beamOS</title>
+<link rel="icon" href="logo.ico">
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+    cursor: url('normalselect.cur'), auto;
+}
+
+/* Logo + glow */
+#logoContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    height: 350px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%);
+    opacity: 0;
+}
+
+#glow.active {
+    animation: glowPulse 3s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+    0%   { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+    50%  { transform: translate(-50%, -50%) scale(1.08); opacity: 0.35; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+}
+
+#logo {
+    width: 300px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+}
+
+/* Popup */
+#popup {
+    position: absolute;
+    width: 400px;
+    background: #222;
+    border: 2px solid #555;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+
+.header {
+    background: #333;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-bottom: 1px solid #555;
+}
+
+.content {
+    padding: 20px;
+    text-align: center;
+}
+
+.content img {
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+.buttons {
+    padding: 10px;
+    text-align: right;
+}
+
+button {
+    margin-left: 10px;
+    padding: 5px 15px;
+    cursor: pointer;
+}
+
+/* Progress area */
+#progressContainer {
+    width: 100%;
+    background: #444;
+    height: 20px;
+    margin-top: 15px;
+    display: none;
+}
+
+#progressBar {
+    height: 100%;
+    width: 0%;
+    background: limegreen;
+}
+
+/* Percentage at bottom */
+#percent {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #aaa;
+    display: none;
+}
+</style>
+</head>
+<body>
+
+<div id="logoContainer">
+    <div id="glow"></div>
+    <img id="logo" src="logo.png">
+</div>
+
+<div id="popup">
+    <div class="header">beamOS Installation</div>
+    <div class="content">
+        <img id="popupIcon" src="question_popupicon.png">
+        <div id="mainText">Install beamOS?</div>
+
+        <div id="progressContainer">
+            <div id="progressBar"></div>
+        </div>
+
+        <div id="percent">0%</div>
+    </div>
+    <div class="buttons" id="buttons">
+        <button onclick="exitInstall()">Exit</button>
+        <button onclick="startInstall()">Install</button>
+    </div>
+</div>
+
+<script>
+const logo = document.getElementById("logo");
+const glow = document.getElementById("glow");
+const popup = document.getElementById("popup");
+
+// Show logo + glow
+setTimeout(() => {
+    logo.style.opacity = 1;
+    glow.style.opacity = 1;
+    glow.classList.add("active");
+}, 3000);
+
+// Show popup
+setTimeout(() => {
+    popup.style.display = "block";
+}, 5000);
+
+function exitInstall() {
+    popup.style.display = "none";
+}
+
+function startInstall() {
+    document.getElementById("popupIcon").src = "wait_popupicon.png";
+    document.getElementById("buttons").style.display = "none";
+    document.getElementById("mainText").innerText = "Please wait";
+
+    const progressContainer = document.getElementById("progressContainer");
+    const progressBar = document.getElementById("progressBar");
+    const percentText = document.getElementById("percent");
+
+    progressContainer.style.display = "block";
+    percentText.style.display = "block";
+
+    // Start cursor flicker
+    startCursorFlicker();
+
+    let duration =15 * 60 * 1000;
+    let startTime = Date.now();
+
+    function updateProgress() {
+        let elapsed = Date.now() - startTime;
+        let percent = Math.min((elapsed / duration) * 100, 100);
+
+        progressBar.style.width = percent + "%";
+        percentText.innerText = percent.toFixed(1) + "%";
+
+        if (percent < 100) {
+            requestAnimationFrame(updateProgress);
+        }
+    }
+
+    updateProgress();
+}
+
+function startCursorFlicker() {
+    const cursors = [
+        "url('workinginbackground.cur'), auto",
+        "url('busy.cur'), auto"
+    ];
+
+    function flicker() {
+        // Randomly pick one of the "busy" cursors
+        document.body.style.cursor = cursors[Math.floor(Math.random() * cursors.length)];
+
+        // After a short time, go back to normal
+        setTimeout(() => {
+            document.body.style.cursor = "url('normalselect.cur'), auto";
+        }, 100 + Math.random() * 300);
+
+        // Repeat randomly
+        setTimeout(flicker, 400 + Math.random() * 1200);
+    }
+
+    flicker();
+}
+
+</script>
+
+</body>
+</html>
