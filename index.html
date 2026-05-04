@@ -176,9 +176,28 @@ function startInstall() {
     progressContainer.style.display = "block";
     percentText.style.display = "block";
 
-    // Start cursor flicker
     startCursorFlicker();
 
+    let duration = 3 * 60 * 1000;
+    let startTime = Date.now();
+
+    function updateProgress() {
+        let elapsed = Date.now() - startTime;
+        let percent = Math.min((elapsed / duration) * 100, 100);
+
+        progressBar.style.width = percent + "%";
+        percentText.innerText = percent.toFixed(1) + "%";
+
+        if (percent < 100) {
+            requestAnimationFrame(updateProgress);
+        } else {
+            setTimeout(startPackagingPhase, 3000);
+        }
+    }
+
+    updateProgress(); // 🚨 THIS WAS MISSING
+    }
+    
     let duration = 3 * 60 * 1000;
     let startTime = Date.now();
 
@@ -203,15 +222,12 @@ function startCursorFlicker() {
     ];
 
     function flicker() {
-        // Randomly pick one of the "busy" cursors
         document.body.style.cursor = cursors[Math.floor(Math.random() * cursors.length)];
 
-        // After a short time, go back to normal
         setTimeout(() => {
             document.body.style.cursor = "url('normalselect.cur'), auto";
         }, 100 + Math.random() * 300);
 
-        // Repeat randomly
         setTimeout(flicker, 400 + Math.random() * 1200);
     }
 
@@ -222,15 +238,13 @@ function startPackagingPhase() {
     const progressBar = document.getElementById("progressBar");
     const percentText = document.getElementById("percent");
 
-    // Change UI
     document.getElementById("popupIcon").src = "package.png";
     document.getElementById("mainText").innerText = "Packaging and coding apps...";
 
-    // Reset progress
     progressBar.style.width = "0%";
     percentText.innerText = "0%";
 
-    let duration = 2 * 60 * 1000; // 2 minutes
+    let duration = 2 * 60 * 1000;
     let startTime = Date.now();
 
     function updatePackaging() {
