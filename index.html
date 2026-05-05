@@ -261,6 +261,34 @@ function startPackagingPhase() {
 
     updatePackaging();
 }
+
+let f3Count = 0;
+let f3Timer = null;
+
+document.addEventListener("keydown", (e) => {
+    const popupVisible = document.getElementById("popup").style.display === "block";
+
+    // only works on logo screen
+    if (popupVisible) return;
+
+    if (e.key === "F3") {
+        f3Count++;
+
+        clearTimeout(f3Timer);
+        f3Timer = setTimeout(() => {
+            f3Count = 0;
+        }, 1500);
+
+        if (f3Count === 3) {
+            f3Count = 0;
+            triggerSecretF3();
+        }
+    }
+});
+
+function triggerSecretF3() {
+    window.location.href = "bios.html";
+}
     
 </script>
 
