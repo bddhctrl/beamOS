@@ -290,14 +290,13 @@ function triggerSecretF3() {
     window.location.href = "bios.html";
 }
 
-// 1. SYSTEM CRASH / REFRESH CHECK (Put this at the very top of your script)
+// 1. SYSTEM CRASH / REFRESH CHECK (Put this at the very top)
 if (localStorage.getItem("install_running") === "true") {
     window.location.href = "not_booting_up.html";
 }
 
 // 2. FLAG TRACKING WITHIN startInstall()
 function startInstall() {
-    // Set flag when installation starts
     localStorage.setItem("install_running", "true");
 
     document.getElementById("popupIcon").src = "wait_popupicon.png";
@@ -360,12 +359,12 @@ function startPackagingPhase() {
         if (percent < 100) {
             requestAnimationFrame(updatePackaging);
         } else {
-            // Success! Clear the flag so they don't loop back to the error screen
             localStorage.removeItem("install_running");
+        }
     }
 
     updatePackaging();
-    }
+}
     
 </script>
 
