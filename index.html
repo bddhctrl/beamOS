@@ -12,10 +12,9 @@ body {
     overflow: hidden;
     font-family: Arial, sans-serif;
     color: white;
-    cursor: url('normalselect.cur'), auto; !important;
+    cursor: url('normalselect.cur'), auto;
 }
 
-/* Logo + glow */
 #logoContainer {
     position: absolute;
     top: 50%;
@@ -52,7 +51,6 @@ body {
     opacity: 0;
 }
 
-/* Popup */
 #popup {
     position: absolute;
     width: 400px;
@@ -94,7 +92,6 @@ button {
     cursor: pointer;
 }
 
-/* Progress area */
 #progressContainer {
     width: 100%;
     background: #444;
@@ -109,7 +106,6 @@ button {
     background: limegreen;
 }
 
-/* Percentage at bottom */
 #percent {
     margin-top: 8px;
     font-size: 12px;
@@ -148,14 +144,12 @@ const logo = document.getElementById("logo");
 const glow = document.getElementById("glow");
 const popup = document.getElementById("popup");
 
-// Show logo + glow
 setTimeout(() => {
     logo.style.opacity = 1;
     glow.style.opacity = 1;
     glow.classList.add("active");
 }, 3000);
 
-// Show popup
 setTimeout(() => {
     popup.style.display = "block";
 }, 5000);
@@ -164,7 +158,36 @@ function exitInstall() {
     popup.style.display = "none";
 }
 
+let flickerInterval = null;
+
+function startCursorFlicker() {
+    const cursors = [
+        "url('workinginbackground.ani'), auto",
+        "url('busy.ani'), auto"
+    ];
+
+    function flicker() {
+        document.body.style.cursor = cursors[Math.floor(Math.random() * cursors.length)];
+        setTimeout(() => {
+            document.body.style.cursor = "url('normalselect.cur'), auto";
+        }, 100 + Math.random() * 300);
+    }
+
+    flicker();
+    flickerInterval = setInterval(flicker, 800 + Math.random() * 800);
+}
+
+function stopCursorFlicker() {
+    if (flickerInterval) {
+        clearInterval(flickerInterval);
+        flickerInterval = null;
+    }
+    document.body.style.cursor = "url('normalselect.cur'), auto";
+}
+
 function startInstall() {
+    localStorage.setItem("install_running", "true");
+
     document.getElementById("popupIcon").src = "wait_popupicon.png";
     document.getElementById("buttons").style.display = "none";
     document.getElementById("mainText").innerText = "Please wait";
@@ -181,46 +204,28 @@ function startInstall() {
     let duration = 3 * 60 * 1000;
     let startTime = Date.now();
 
-    updateProgress(); // 🚨 THIS WAS MISSING
-    }
-    
-    let duration = 3 * 60 * 1000;
-    let startTime = Date.now();
-
     function updateProgress() {
-    let elapsed = Date.now() - startTime;
-    let percent = Math.min((elapsed / duration) * 100, 100);
+        let elapsed = Date.now() - startTime;
+        let percent = Math.min((elapsed / duration) * 100, 100);
 
-    progressBar.style.width = percent + "%";
-    percentText.innerText = percent.toFixed(1) + "%";
+        progressBar.style.width = percent + "%";
+        percentText.innerText = percent.toFixed(1) + "%";
 
-    if (percent < 100) {
-        requestAnimationFrame(updateProgress);
-    } else {
-        setTimeout(startPackagingPhase, 3000);
-    }
-    }
-    
-function startCursorFlicker() {
-    const cursors = [
-        "url('workinginbackground.ani'), auto",
-        "url('busy.ani'), auto"
-    ];
-
-    function flicker() {
-        document.body.style.cursor = cursors[Math.floor(Math.random() * cursors.length)];
-
-        setTimeout(() => {
-            document.body.style.cursor = "url('normalselect.cur'), auto";
-        }, 100 + Math.random() * 300);
-
-        setTimeout(flicker, 400 + Math.random() * 1200);
+        if (percent < 100) {
+            requestAnimationFrame(updateProgress);
+        } else {
+            setTimeout(function() {
+                startPackagingPhase();
+            }, 3000);
+        }
     }
 
-    flicker();
+    updateProgress();
 }
 
 function startPackagingPhase() {
+    stopCursorFlicker();
+
     const progressBar = document.getElementById("progressBar");
     const percentText = document.getElementById("percent");
 
@@ -242,6 +247,8 @@ function startPackagingPhase() {
 
         if (percent < 100) {
             requestAnimationFrame(updatePackaging);
+        } else {
+            localStorage.removeItem("install_running");
         }
     }
 
@@ -254,12 +261,10 @@ let f3Timer = null;
 document.addEventListener("keydown", (e) => {
     const popupVisible = document.getElementById("popup").style.display === "block";
 
-    // only works on logo screen
     if (popupVisible) return;
 
     if (e.key === "F3") {
         f3Count++;
-
         clearTimeout(f3Timer);
         f3Timer = setTimeout(() => {
             f3Count = 0;
@@ -267,20 +272,14 @@ document.addEventListener("keydown", (e) => {
 
         if (f3Count === 3) {
             f3Count = 0;
-            triggerSecretF3();
+            window.location.href = "bios.html";
         }
     }
 });
 
-function triggerSecretF3() {
-    window.location.href = "bios.html";
-}
-
-// 1. SYSTEM CRASH / REFRESH CHECK (Put this at the very top)
 if (localStorage.getItem("install_running") === "true") {
     window.location.href = "not_booting_up.html";
 }
-    
 </script>
 
 </body>
