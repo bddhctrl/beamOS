@@ -181,20 +181,6 @@ function startInstall() {
     let duration = 3 * 60 * 1000;
     let startTime = Date.now();
 
-    function updateProgress() {
-        let elapsed = Date.now() - startTime;
-        let percent = Math.min((elapsed / duration) * 100, 100);
-
-        progressBar.style.width = percent + "%";
-        percentText.innerText = percent.toFixed(1) + "%";
-
-        if (percent < 100) {
-            requestAnimationFrame(updateProgress);
-        } else {
-            setTimeout(startPackagingPhase, 3000);
-        }
-    }
-
     updateProgress(); // 🚨 THIS WAS MISSING
     }
     
@@ -293,77 +279,6 @@ function triggerSecretF3() {
 // 1. SYSTEM CRASH / REFRESH CHECK (Put this at the very top)
 if (localStorage.getItem("install_running") === "true") {
     window.location.href = "not_booting_up.html";
-}
-
-// 2. FLAG TRACKING WITHIN startInstall()
-function startInstall() {
-    localStorage.setItem("install_running", "true");
-
-    document.getElementById("popupIcon").src = "wait_popupicon.png";
-    document.getElementById("buttons").style.display = "none";
-    document.getElementById("mainText").innerText = "Please wait";
-
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const percentText = document.getElementById("percent");
-
-    progressContainer.style.display = "block";
-    percentText.style.display = "block";
-
-    startCursorFlicker();
-
-    let duration = 3 * 60 * 1000;
-    let startTime = Date.now();
-
-    function updateProgress() {
-        let elapsed = Date.now() - startTime;
-        let percent = Math.min((elapsed / duration) * 100, 100);
-
-        progressBar.style.width = percent + "%";
-        percentText.innerText = percent.toFixed(1) + "%";
-
-        if (percent < 100) {
-            requestAnimationFrame(updateProgress);
-        } else {
-            setTimeout(startPackagingPhase, 3000);
-        }
-    }
-
-    updateProgress(); 
-}
-
-// 3. REMOVE FLAG WHEN FINISHED WITHIN startPackagingPhase()
-function startPackagingPhase() {
-    clearTimeout(flickerTimeoutId);
-    document.body.style.cursor = "url('normalselect.cur'), auto !important";
-
-    const progressBar = document.getElementById("progressBar");
-    const percentText = document.getElementById("percent");
-
-    document.getElementById("popupIcon").src = "package.png";
-    document.getElementById("mainText").innerText = "Packaging and coding apps...";
-
-    progressBar.style.width = "0%";
-    percentText.innerText = "0%";
-
-    let duration = 2 * 60 * 1000;
-    let startTime = Date.now();
-
-    function updatePackaging() {
-        let elapsed = Date.now() - startTime;
-        let percent = Math.min((elapsed / duration) * 100, 100);
-
-        progressBar.style.width = percent + "%";
-        percentText.innerText = percent.toFixed(1) + "%";
-
-        if (percent < 100) {
-            requestAnimationFrame(updatePackaging);
-        } else {
-            localStorage.removeItem("install_running");
-        }
-    }
-
-    updatePackaging();
 }
     
 </script>
