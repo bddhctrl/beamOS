@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>beamOS</title>
+    <link rel="icon" href="logo.ico" type="image/x-icon">
+
+    <style>
+        @font-face {
+            font-family: 'beamOSFont';
+            src: url('font.ttf') format('truetype');
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #000000;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'beamOSFont', -apple-system, sans-serif;
+            cursor: none;
+            animation: 
+                bgToOrange 0.3s ease-out forwards 12s,
+                bgToWallpaper 0.1s forwards 22s;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: eraseEverything 0.1s forwards 10s;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            opacity: 0;
+            animation: 
+                fadeInLogo 0.1s forwards 5s,
+                swipeLeft 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards 5s;
+        }
+
+        .title {
+            color: #ffffff;
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInTitle 0.5s ease-out forwards 5.4s;
+        }
+
+        .user-profile {
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #ffffff;
+            opacity: 0;
+            visibility: hidden;
+            animation: 
+                fadeInLogin 0.5s ease-out forwards 12s,
+                eraseEverything 0.1s forwards 22s;
+        }
+
+        .pfp {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+        }
+
+        .status-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* =========================
+           LEFT TASKBAR (UPDATED)
+        ========================== */
+
+        .taskbar {
+    position: fixed;   /* more stable than absolute */
+    top: 0;
+    left: 0;
+    width: 110px;
+    height: 100vh;
+    background-color: #000000;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    justify-content: space-between; /* KEY CHANGE */
+
+    padding: 20px 0;
+    z-index: 9999;
+}
+
+.taskbar-apps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.taskbar-tray {
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    margin-bottom: 10px;
+}
+
+        .taskbar-btn {
+            width: 70px;   /* BIG ICONS */
+            height: 70px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .taskbar-btn:active {
+            transform: scale(0.9);
+        }
+
+.top-clock {
+    position: fixed;
+    top: 10px;
+    right: 15px;
+    color: white;
+    font-family: 'beamOSFont', -apple-system, sans-serif;
+    text-align: right;
+    z-index: 10000;
+    opacity: 0.9;
+}
+
+#top-time {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+#top-date {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+        /* Desktop */
+        .desktop-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            visibility: hidden;
+            animation: showDesktop 0.5s ease-out forwards 22s;
+        }
+
+        .bgToOrange {
+            from { background-color: #000; }
+            to { background-color: #8B4500; }
+        }
+
+        @keyframes bgToOrange {
+            from { background-color: #000000; }
+            to { background-color: #8B4500; }
+        }
+
+        @keyframes bgToWallpaper {
+            to { background-image: url('wallpaper1.png'); }
+        }
+
+        @keyframes fadeInLogo {
+            to { opacity: 1; }
+        }
+
+        @keyframes swipeLeft {
+            from { transform: translateX(0); }
+            to { transform: translateX(-40px); }
+        }
+
+        @keyframes fadeInTitle {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes eraseEverything {
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        @keyframes fadeInLogin {
+            to { opacity: 1; visibility: visible; }
+        }
+
+        @keyframes showDesktop {
+            to { opacity: 1; visibility: visible; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="user-profile">
+        <img src="pfp_default1.png" class="pfp">
+        <div class="user-info">
+            <div class="username">PC</div>
+            <div class="status-container">
+                <img src="loading_spinner.gif" class="spinner">
+                <span class="status-text">Preparing beam</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <img src="logo.png" class="logo">
+        <h1 class="title">beamOS</h1>
+    </div>
+
+    <div class="desktop-interface">
+        <div class="taskbar">
+            <div class="taskbar-apps">
+                <img src="logo.png" class="taskbar-btn">
+                <img src="redfox.png" class="taskbar-btn">
+                <img src="finder.png" class="taskbar-btn">
+                <img src="email.png" class="taskbar-btn">
+            </div>
+
+            <div class="top-clock">
+    <div id="top-time">00:00 AM</div>
+    <div id="top-date">01/01/2026</div>
+</div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const timeEl = document.getElementById('top-time');
+            const dateEl = document.getElementById('top-date');
+
+            if(!timeEl || !dateEl) return;
+
+            const now = new Date();
+
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2,'0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            timeEl.textContent = `${hours}:${minutes} ${ampm}`;
+
+            const month = String(now.getMonth()+1).padStart(2,'0');
+            const day = String(now.getDate()).padStart(2,'0');
+            const year = now.getFullYear();
+
+            dateEl.textContent = `${month}/${day}/${year}`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+</body>
+</html>
